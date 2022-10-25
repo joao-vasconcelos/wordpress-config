@@ -20,7 +20,6 @@ echo -e "Welcome to WordPress & LAMP stack installation and configuration wizard
 
 echo -e "Update APT"
 apt-get update;
-exit 1
 
 
 #Checking packages
@@ -137,6 +136,9 @@ CURL=$(dpkg-query -W -f='${Status}' curl 2>/dev/null | grep -c "ok installed")
     then
       echo -e "${GREEN}curl is installed!${NC}"
   fi
+
+
+exit 1
 
 
 #phpmyadmin default path change
