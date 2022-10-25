@@ -85,9 +85,6 @@ apt-get install wget --yes;
 echo -e "${YELLOW}Installing 'curl'...${NC}"
 apt-get install curl --yes;
 
-echo -e "${YELLOW}Installing 'certbot'...${NC}"
-apt-get install certbot --yes;
-
 echo -e "${GREEN}Packages updated!${NC}"
 
 
@@ -125,15 +122,19 @@ curl https://wordpress.org/latest.tar.gz | sudo -u www-data tar zx -C /srv/www
 # # #
 # Configure Certbot HTTPS
 echo -e "${YELLOW}Configuring letsencrypt using certbot...${NC}"
-certbot run -n --agree-tos -d $domain,www.$domain  -m  noreply@$domain  --redirect
+sudo snap install core; sudo snap refresh core
+sudo apt-get remove certbot
+sudo snap install --classic certbot
+sudo ln -s /snap/bin/certbot /usr/bin/certbot
+echo -e "Enter website domain (ex: mydomain.com): "
+read domain
+certbot run -n -m --apache --agree-tos -d $domain,www.$domain  noreply@$domain  --redirect
 
 
 
 # # #
 # Configure Apache
 echo -e "${YELLOW}Configuring Apache2...${NC}"
-echo -e "Enter website domain (ex: mydomain.com): "
-read domain
 
 rm -R /etc/apache2/sites-available/000-default-le-ssl.conf
 cat > /etc/apache2/sites-available/000-default-le-ssl.conf <<EOL
