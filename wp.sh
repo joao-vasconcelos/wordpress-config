@@ -22,6 +22,9 @@ First of all, we going to check all required packages..."
 echo -e "${YELLOW}Checking packages...${NC}"
 echo -e "List of required packages: nano, zip, unzip, mc, htop, fail2ban, apache2 & php, mysql, php curl, phpmyadmin, wget, curl"
 
+apt-get update;
+apt-get update;
+
 
 NANO=$(dpkg-query -W -f='${Status}' nano 2>/dev/null | grep -c "ok installed")
   if [ $(dpkg-query -W -f='${Status}' nano 2>/dev/null | grep -c "ok installed") -eq 0 ];
