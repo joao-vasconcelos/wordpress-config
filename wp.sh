@@ -113,6 +113,7 @@ sleep 5
 # # #
 # Configure Apache2 & Certbot HTTPS
 echo -e "${YELLOW}Configuring Apache & LetsEncrypt using certbot...${NC}"
+
 cat > /etc/apache2/sites-available/000-default-temp.conf <<EOL
 <VirtualHost *:80>
   
@@ -130,6 +131,7 @@ cat > /etc/apache2/sites-available/000-default-temp.conf <<EOL
 
 </VirtualHost>
 EOL
+
 mv /etc/apache2/sites-available/000-default-temp.conf /etc/apache2/sites-available/000-default.conf
 sudo a2dissite 000-default
 sudo a2ensite 000-default
