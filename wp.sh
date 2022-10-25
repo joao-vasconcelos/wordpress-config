@@ -20,6 +20,9 @@ NC='\033[0m' # No Color
 # Script init
 clear
 echo -e "Welcome to WordPress & LAMP stack installation and configuration wizard!"
+echo -e "Enter the domain for this host (ex: mydomain.com): "
+read domain
+
 
 
 
@@ -89,10 +92,9 @@ echo -e "${GREEN}Packages updated!${NC}"
 
 
 
-
 # # #
 # Setting RAM Swap
-echo -e "On next step we create SWAP (it should be your RAM x2)..."
+echo -e "Setting up RAM swap..."
 
 RAM="`free -m | grep Mem | awk '{print $2}'`"
 swap_allowed=$(($RAM * 2))
@@ -110,8 +112,6 @@ sleep 5
 
 # # #
 # Configure Apache2 & Certbot HTTPS
-echo -e "Enter website domain (ex: mydomain.com): "
-read domain
 echo -e "${YELLOW}Configuring Apache & LetsEncrypt using certbot...${NC}"
 cat > /etc/apache2/sites-available/000-default-temp.conf <<EOL
 <VirtualHost *:80>
@@ -183,9 +183,7 @@ echo -e "${GREEN}.htaccess file was succesfully created!${NC}"
 # # #
 # Configuring MySQL
 echo -e "${GREEN}Setting up MySQL and wp-config.php...${NC}"
-echo -e "Set password for 'wordpress' database user: "
-read db_pass
-
+db_pass=$(strings /dev/urandom | grep -o '[[:alnum:]]' | head -n 30 | tr -d '\n')
 mysql -u root -p <<EOF
 CREATE USER 'wordpress'@'localhost' IDENTIFIED BY '$db_pass';
 CREATE DATABASE IF NOT EXISTS wordpress;
@@ -244,4 +242,5 @@ sleep 3
 # # #
 # End Script
 echo -e "${GREEN}Installation & configuration succesfully finished! Thank you :)${NC}"
+echo -e "${GREEN}You can now visit <https://$domain> to finish setting up Wordpress.${NC}"
 exit 1
