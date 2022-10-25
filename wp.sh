@@ -157,14 +157,14 @@ define('DB_CHARSET', 'utf8');
 
 define('DB_COLLATE', '');
 
-define('AUTH_KEY',         'wordpress');
-define('SECURE_AUTH_KEY',  'wordpress');
-define('LOGGED_IN_KEY',    'wordpress');
-define('NONCE_KEY',        'wordpress');
-define('AUTH_SALT',        'wordpress');
-define('SECURE_AUTH_SALT', 'wordpress');
-define('LOGGED_IN_SALT',   'wordpress');
-define('NONCE_SALT',       'wordpress');
+define('AUTH_KEY',         '$(strings /dev/urandom | grep -o '[[:alnum:]]' | head -n 30 | tr -d '\n')');
+define('SECURE_AUTH_KEY',  '$(strings /dev/urandom | grep -o '[[:alnum:]]' | head -n 30 | tr -d '\n')');
+define('LOGGED_IN_KEY',    '$(strings /dev/urandom | grep -o '[[:alnum:]]' | head -n 30 | tr -d '\n')');
+define('NONCE_KEY',        '$(strings /dev/urandom | grep -o '[[:alnum:]]' | head -n 30 | tr -d '\n')');
+define('AUTH_SALT',        '$(strings /dev/urandom | grep -o '[[:alnum:]]' | head -n 30 | tr -d '\n')');
+define('SECURE_AUTH_SALT', '$(strings /dev/urandom | grep -o '[[:alnum:]]' | head -n 30 | tr -d '\n')');
+define('LOGGED_IN_SALT',   '$(strings /dev/urandom | grep -o '[[:alnum:]]' | head -n 30 | tr -d '\n')');
+define('NONCE_SALT',       '$(strings /dev/urandom | grep -o '[[:alnum:]]' | head -n 30 | tr -d '\n')');
 
 \$table_prefix  = 'wp_';
 
@@ -176,7 +176,7 @@ if ( !defined('ABSPATH') )
 require_once(ABSPATH . 'wp-settings.php');
 EOL
 
-echo -e "${GREEN}Database and wp-config.php were succesfully created & configured!${NC}"
+echo -e "${GREEN}Database and wp-config.php were created & configured!${NC}"
 
 
 
