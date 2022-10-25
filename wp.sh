@@ -1,8 +1,8 @@
 #!/bin/bash
 
-#####################################################
-#Script to confiruge Server, WebServer and WordPress#
-#####################################################
+#######################################################
+# Script to configure Server, WebServer and WordPress #
+#######################################################
 
 
 #Colors settings
@@ -18,195 +18,79 @@ clear
 echo -e "Welcome to WordPress & LAMP stack installation and configuration wizard!"
 
 
-echo -e "Update APT"
+echo -e "Updating apt..."
 apt-get update;
 
 
 #Checking packages
 echo -e "${YELLOW}Checking packages...${NC}"
-echo -e "List of required packages: nano, zip, unzip, mc, htop, fail2ban, apache2 & php, mysql, php curl, phpmyadmin, wget, curl"
 
+echo -e "${YELLOW}Installing 'apache2'...${NC}"
+apt-get install apache2 --yes;
 
-NANO=$(dpkg-query -W -f='${Status}' nano 2>/dev/null | grep -c "ok installed")
-  if [ $(dpkg-query -W -f='${Status}' nano 2>/dev/null | grep -c "ok installed") -eq 0 ];
-  then
-    echo -e "${YELLOW}Installing nano${NC}"
-    apt-get install nano --yes;
-    elif [ $(dpkg-query -W -f='${Status}' nano 2>/dev/null | grep -c "ok installed") -eq 1 ];
-    then
-      echo -e "${GREEN}nano is installed!${NC}"
-  fi
+echo -e "${YELLOW}Installing 'ghostscript'...${NC}"
+apt-get install ghostscript --yes;
 
-ZIP=$(dpkg-query -W -f='${Status}' zip 2>/dev/null | grep -c "ok installed")
-  if [ $(dpkg-query -W -f='${Status}' zip 2>/dev/null | grep -c "ok installed") -eq 0 ];
-  then
-    echo -e "${YELLOW}Installing zip${NC}"
-    apt-get install zip --yes;
-    elif [ $(dpkg-query -W -f='${Status}' zip 2>/dev/null | grep -c "ok installed") -eq 1 ];
-    then
-      echo -e "${GREEN}zip is installed!${NC}"
-  fi
+echo -e "${YELLOW}Installing 'libapache2-mod-php'...${NC}"
+apt-get install libapache2-mod-php --yes;
 
-MC=$(dpkg-query -W -f='${Status}' mc 2>/dev/null | grep -c "ok installed")
-  if [ $(dpkg-query -W -f='${Status}' mc 2>/dev/null | grep -c "ok installed") -eq 0 ];
-  then
-    echo -e "${YELLOW}Installing mc${NC}"
-    apt-get install mc --yes;
-    elif [ $(dpkg-query -W -f='${Status}' mc 2>/dev/null | grep -c "ok installed") -eq 1 ];
-    then
-      echo -e "${GREEN}mc is installed!${NC}"
-  fi
+echo -e "${YELLOW}Installing 'mysql-server'...${NC}"
+apt-get install mysql-server --yes;
 
-HTOP=$(dpkg-query -W -f='${Status}' htop 2>/dev/null | grep -c "ok installed")
-  if [ $(dpkg-query -W -f='${Status}' htop 2>/dev/null | grep -c "ok installed") -eq 0 ];
-  then
-    echo -e "${YELLOW}Installing htop${NC}"
-    apt-get install htop --yes;
-    elif [ $(dpkg-query -W -f='${Status}' htop 2>/dev/null | grep -c "ok installed") -eq 1 ];
-    then
-      echo -e "${GREEN}htop is installed!${NC}"
-  fi
+echo -e "${YELLOW}Installing 'php'...${NC}"
+apt-get install php --yes;
 
-FAIL2BAN=$(dpkg-query -W -f='${Status}' fail2ban 2>/dev/null | grep -c "ok installed")
-  if [ $(dpkg-query -W -f='${Status}' fail2ban 2>/dev/null | grep -c "ok installed") -eq 0 ];
-  then
-    echo -e "${YELLOW}Installing fail2ban${NC}"
-    apt-get install fail2ban --yes;
-    elif [ $(dpkg-query -W -f='${Status}' fail2ban 2>/dev/null | grep -c "ok installed") -eq 1 ];
-    then
-      echo -e "${GREEN}fail2ban is installed!${NC}"
-  fi
+echo -e "${YELLOW}Installing 'php-bcmath'...${NC}"
+apt-get install php-bcmath --yes;
 
-APACHE2=$(dpkg-query -W -f='${Status}' apache2 2>/dev/null | grep -c "ok installed")
-  if [ $(dpkg-query -W -f='${Status}' apache2 2>/dev/null | grep -c "ok installed") -eq 0 ];
-  then
-    echo -e "${YELLOW}Installing apache2${NC}"
-    apt-get install apache2 php5 --yes;
-    elif [ $(dpkg-query -W -f='${Status}' apache2 2>/dev/null | grep -c "ok installed") -eq 1 ];
-    then
-      echo -e "${GREEN}apache2 is installed!${NC}"
-  fi
+echo -e "${YELLOW}Installing 'php-curl'...${NC}"
+apt-get install php-curl --yes;
 
-MYSQL=$(dpkg-query -W -f='${Status}' mysql-server 2>/dev/null | grep -c "ok installed")
-  if [ $(dpkg-query -W -f='${Status}' mysql-server 2>/dev/null | grep -c "ok installed") -eq 0 ];
-  then
-    echo -e "${YELLOW}Installing mysql-server${NC}"
-    apt-get install mysql-server --yes;
-    elif [ $(dpkg-query -W -f='${Status}' mysql-server 2>/dev/null | grep -c "ok installed") -eq 1 ];
-    then
-      echo -e "${GREEN}mysql-server is installed!${NC}"
-  fi
+echo -e "${YELLOW}Installing 'php-imagick'...${NC}"
+apt-get install php-imagick --yes;
 
-PHP5CURL=$(dpkg-query -W -f='${Status}' php5-curl 2>/dev/null | grep -c "ok installed")
-  if [ $(dpkg-query -W -f='${Status}' php5-curl 2>/dev/null | grep -c "ok installed") -eq 0 ];
-  then
-    echo -e "${YELLOW}Installing php5-curl${NC}"
-    apt-get install php5-curl --yes;
-    elif [ $(dpkg-query -W -f='${Status}' php5-curl 2>/dev/null | grep -c "ok installed") -eq 1 ];
-    then
-      echo -e "${GREEN}php5-curl is installed!${NC}"
-  fi
+echo -e "${YELLOW}Installing 'php-intl'...${NC}"
+apt-get install php-intl --yes;
 
-# PHPMYADMIN=$(dpkg-query -W -f='${Status}' phpmyadmin 2>/dev/null | grep -c "ok installed")
-#   if [ $(dpkg-query -W -f='${Status}' phpmyadmin 2>/dev/null | grep -c "ok installed") -eq 0 ];
-#   then
-#     echo -e "${YELLOW}Installing phpmyadmin${NC}"
-#     apt-get install phpmyadmin --yes;
-#     elif [ $(dpkg-query -W -f='${Status}' phpmyadmin 2>/dev/null | grep -c "ok installed") -eq 1 ];
-#     then
-#       echo -e "${GREEN}phpmyadmin is installed!${NC}"
-#   fi
+echo -e "${YELLOW}Installing 'php-json'...${NC}"
+apt-get install php-json --yes;
 
-WGET=$(dpkg-query -W -f='${Status}' wget 2>/dev/null | grep -c "ok installed")
-  if [ $(dpkg-query -W -f='${Status}' wget 2>/dev/null | grep -c "ok installed") -eq 0 ];
-  then
-    echo -e "${YELLOW}Installing wget${NC}"
-    apt-get install wget --yes;
-    elif [ $(dpkg-query -W -f='${Status}' wget 2>/dev/null | grep -c "ok installed") -eq 1 ];
-    then
-      echo -e "${GREEN}wget is installed!${NC}"
-  fi
+echo -e "${YELLOW}Installing 'php-mbstring'...${NC}"
+apt-get install php-mbstring --yes;
 
-CURL=$(dpkg-query -W -f='${Status}' curl 2>/dev/null | grep -c "ok installed")
-  if [ $(dpkg-query -W -f='${Status}' curl 2>/dev/null | grep -c "ok installed") -eq 0 ];
-  then
-    echo -e "${YELLOW}Installing curl${NC}"
-    apt-get install curl --yes;
-    elif [ $(dpkg-query -W -f='${Status}' curl 2>/dev/null | grep -c "ok installed") -eq 1 ];
-    then
-      echo -e "${GREEN}curl is installed!${NC}"
-  fi
+echo -e "${YELLOW}Installing 'php-mysql'...${NC}"
+apt-get install php-mysql --yes;
+
+echo -e "${YELLOW}Installing 'php-xml'...${NC}"
+apt-get install php-xml --yes;
+
+echo -e "${YELLOW}Installing 'php-zip'...${NC}"
+apt-get install php-zip --yes;
+
+echo -e "${YELLOW}Installing 'nano'...${NC}"
+apt-get install nano --yes;
+
+echo -e "${YELLOW}Installing 'wget'...${NC}"
+apt-get install wget --yes;
+
+echo -e "${YELLOW}Installing 'curl'...${NC}"
+apt-get install curl --yes;
+
+# echo -e "${YELLOW}Installing 'zip'...${NC}"
+# apt-get install zip --yes;
+
+# echo -e "${YELLOW}Installing 'mc'...${NC}"
+# apt-get install mc --yes;
+
+# echo -e "${YELLOW}Installing 'htop'...${NC}"
+# apt-get install htop --yes;
+
+# echo -e "${YELLOW}Installing 'fail2ban'...${NC}"
+# apt-get install fail2ban --yes;
+
 
 
 exit 1
-
-
-#phpmyadmin default path change
-# echo -e "${YELLOW}Changing phpMyAdmin default path from /phpMyAdmin to /myadminphp...${NC}"
-
-# read -r -p "Do you want to change default phpMyAdmin path to /myadminphp? [y/N] " response
-# case $response in
-#     [yY][eE][sS]|[yY]) 
-  
-# cat >/etc/phpmyadmin/apache.conf <<EOL
-# # phpMyAdmin default Apache configuration
-
-# Alias /myadminphp /usr/share/phpmyadmin
-
-# <Directory /usr/share/phpmyadmin>
-#     Options FollowSymLinks
-#     DirectoryIndex index.php
-
-#     <IfModule mod_php5.c>
-#         <IfModule mod_mime.c>
-#             AddType application/x-httpd-php .php
-#         </IfModule>
-#         <FilesMatch ".+\.php$">
-#             SetHandler application/x-httpd-php
-#         </FilesMatch>
-
-#         php_flag magic_quotes_gpc Off
-#         php_flag track_vars On
-#         php_flag register_globals Off
-#         php_admin_flag allow_url_fopen Off
-#         php_value include_path .
-#         php_admin_value upload_tmp_dir /var/lib/phpmyadmin/tmp
-#         php_admin_value open_basedir /usr/share/phpmyadmin/:/etc/phpmyadmin/:/var/lib/phpmyadmin/:/usr/share/php/php-gettext/:/usr/share/javascript/:/usr/share/php/tcpdf/
-#     </IfModule>
-
-# </Directory>
-
-# # Authorize for setup
-# <Directory /usr/share/phpmyadmin/setup>
-#     <IfModule mod_authz_core.c>
-#         <IfModule mod_authn_file.c>
-#             AuthType Basic
-#             AuthName "phpMyAdmin Setup"
-#             AuthUserFile /etc/phpmyadmin/htpasswd.setup
-#         </IfModule>
-#         Require valid-user
-#     </IfModule>
-# </Directory>
-
-# # Disallow web access to directories that don't need it
-# <Directory /usr/share/phpmyadmin/libraries>
-#     Require all denied
-# </Directory>
-# <Directory /usr/share/phpmyadmin/setup/lib>
-#     Require all denied
-# </Directory>
-# EOL
-
-# echo -e "${GREEN}Path was succesfully changed!
-# New phpMyAdmin path is: /myadminphp (i.e.: yourwebsite.com/myadminphp)${NC}"
-
-#         ;;
-#     *)
-
-#   echo -e "${RED}Path was not changed!${NC}"
-
-#         ;;
-# esac
 
 #creating user
 echo -e "${YELLOW}Adding separate user & creating website home folder for secure running of your website...${NC}"
