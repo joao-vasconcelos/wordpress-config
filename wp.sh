@@ -112,14 +112,11 @@ sleep 5
 # Configure Apache2 & Certbot HTTPS
 echo -e "${YELLOW}Configuring Apache & LetsEncrypt using certbot...${NC}"
 cat > /etc/apache2/sites-available/000-default-temp.conf <<EOL
-# Added to mitigate CVE-2017-8295 vulnerability
-UseCanonicalName On
-
 <VirtualHost *:80>
-        ServerName $domain
-        ServerAlias www.$domain
-        ServerAdmin webmaster@localhost
-        DocumentRoot /srv/www/html
+  ServerName $domain
+  ServerAlias www.$domain
+  ServerAdmin webmaster@localhost
+  DocumentRoot /srv/www/html
 </VirtualHost>
 EOL
 mv /etc/apache2/sites-available/000-default-temp.conf /etc/apache2/sites-available/000-default.conf
