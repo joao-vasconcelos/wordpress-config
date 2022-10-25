@@ -110,6 +110,8 @@ sleep 5
 
 # # #
 # Configure Apache2 & Certbot HTTPS
+echo -e "Enter website domain (ex: mydomain.com): "
+read domain
 echo -e "${YELLOW}Configuring Apache & LetsEncrypt using certbot...${NC}"
 cat > /etc/apache2/sites-available/000-default-temp.conf <<EOL
 <VirtualHost *:80>
@@ -120,7 +122,7 @@ cat > /etc/apache2/sites-available/000-default-temp.conf <<EOL
 </VirtualHost>
 EOL
 mv /etc/apache2/sites-available/000-default-temp.conf /etc/apache2/sites-available/000-default.conf
-sudo a2dissite 000-default
+# sudo a2dissite 000-default
 sudo a2ensite 000-default
 sudo service apache2 reload
 sleep 3
@@ -130,8 +132,6 @@ sudo snap refresh core
 sudo apt-get remove certbot
 sudo snap install --classic certbot
 sudo ln -s /snap/bin/certbot /usr/bin/certbot
-echo -e "Enter website domain (ex: mydomain.com): "
-read domain
 certbot run -n --apache --agree-tos -d $domain,www.$domain -m noreply@$domain --redirect
 sudo service apache2 reload
 echo -e "${GREEN}Apache & LetsEncrypt was configured by Certbot!${NC}"
