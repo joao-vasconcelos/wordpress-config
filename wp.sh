@@ -125,6 +125,7 @@ RewriteRule . /index.php [L]
 EOL
 
 chmod 644 /srv/www/html/.htaccess
+chown www-data: /srv/www/html/.htaccess
 
 echo -e "${GREEN}.htaccess file was succesfully created!${NC}"
 
