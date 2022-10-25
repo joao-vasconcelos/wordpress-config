@@ -115,14 +115,23 @@ read domain
 echo -e "${YELLOW}Configuring Apache & LetsEncrypt using certbot...${NC}"
 cat > /etc/apache2/sites-available/000-default-temp.conf <<EOL
 <VirtualHost *:80>
+  
   ServerName $domain
   ServerAlias www.$domain
   ServerAdmin webmaster@localhost
+  
   DocumentRoot /srv/www/html
+
+  <Directory /srv/www/html/>
+    Options FollowSymLinks
+    AllowOverride All
+    Require all granted
+  </Directory>
+
 </VirtualHost>
 EOL
 mv /etc/apache2/sites-available/000-default-temp.conf /etc/apache2/sites-available/000-default.conf
-# sudo a2dissite 000-default
+sudo a2dissite 000-default
 sudo a2ensite 000-default
 sudo service apache2 reload
 sleep 3
