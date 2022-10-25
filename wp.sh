@@ -35,59 +35,8 @@ apt-get update;
 
 # # #
 # Install required packages
-echo -e "${YELLOW}Checking packages...${NC}"
-
-echo -e "${YELLOW}Installing 'apache2'...${NC}"
-apt-get install apache2 --yes;
-
-echo -e "${YELLOW}Installing 'ghostscript'...${NC}"
-apt-get install ghostscript --yes;
-
-echo -e "${YELLOW}Installing 'libapache2-mod-php'...${NC}"
-apt-get install libapache2-mod-php --yes;
-
-echo -e "${YELLOW}Installing 'mysql-server'...${NC}"
-apt-get install mysql-server --yes;
-
-echo -e "${YELLOW}Installing 'php'...${NC}"
-apt-get install php --yes;
-
-echo -e "${YELLOW}Installing 'php-bcmath'...${NC}"
-apt-get install php-bcmath --yes;
-
-echo -e "${YELLOW}Installing 'php-curl'...${NC}"
-apt-get install php-curl --yes;
-
-echo -e "${YELLOW}Installing 'php-imagick'...${NC}"
-apt-get install php-imagick --yes;
-
-echo -e "${YELLOW}Installing 'php-intl'...${NC}"
-apt-get install php-intl --yes;
-
-echo -e "${YELLOW}Installing 'php-json'...${NC}"
-apt-get install php-json --yes;
-
-echo -e "${YELLOW}Installing 'php-mbstring'...${NC}"
-apt-get install php-mbstring --yes;
-
-echo -e "${YELLOW}Installing 'php-mysql'...${NC}"
-apt-get install php-mysql --yes;
-
-echo -e "${YELLOW}Installing 'php-xml'...${NC}"
-apt-get install php-xml --yes;
-
-echo -e "${YELLOW}Installing 'php-zip'...${NC}"
-apt-get install php-zip --yes;
-
-echo -e "${YELLOW}Installing 'nano'...${NC}"
-apt-get install nano --yes;
-
-echo -e "${YELLOW}Installing 'wget'...${NC}"
-apt-get install wget --yes;
-
-echo -e "${YELLOW}Installing 'curl'...${NC}"
-apt-get install curl --yes;
-
+echo -e "${YELLOW}Checking required packages...${NC}"
+apt-get install --yes apache2 ghostscript libapache2-mod-php mysql-server php php-bcmath php-curl php-imagick php-intl php-json php-mbstring php-mysql php-xml php-zip nano wget curl
 echo -e "${GREEN}Packages updated!${NC}"
 
 
@@ -106,7 +55,7 @@ swapon /var/swap.img
 
 echo -e "${GREEN}RAM detected: $RAM
 Swap was created: $swap${NC}"
-sleep 5
+sleep 3
 
 
 
@@ -186,7 +135,7 @@ echo -e "${GREEN}.htaccess file was succesfully created!${NC}"
 # Configuring MySQL
 echo -e "${GREEN}Setting up MySQL and wp-config.php...${NC}"
 db_pass=$(strings /dev/urandom | grep -o '[[:alnum:]]' | head -n 30 | tr -d '\n')
-mysql -u root -p <<EOF
+mysql --user=root --password=$db_pass <<EOF
 CREATE USER 'wordpress'@'localhost' IDENTIFIED BY '$db_pass';
 CREATE DATABASE IF NOT EXISTS wordpress;
 GRANT ALL PRIVILEGES ON wordpress.* TO 'wordpress'@'localhost';
@@ -244,5 +193,5 @@ sleep 3
 # # #
 # End Script
 echo -e "${GREEN}Installation & configuration succesfully finished! Thank you :)${NC}"
-echo -e "${GREEN}You can now visit <https://$domain> to finish setting up Wordpress.${NC}"
+echo -e "${GREEN}You can now visit < https://$domain > to finish setting up Wordpress.${NC}"
 exit 1
