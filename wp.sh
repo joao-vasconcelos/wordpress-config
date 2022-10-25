@@ -122,6 +122,12 @@ curl https://wordpress.org/latest.tar.gz | sudo -u www-data tar zx -C /srv/www
 
 
 
+# # #
+# Configure Certbot HTTPS
+echo -e "${YELLOW}Configuring letsencrypt using certbot...${NC}"
+certbot run -n --agree-tos -d $domain,www.$domain  -m  noreply@$domain  --redirect
+
+
 
 # # #
 # Configure Apache
@@ -192,13 +198,6 @@ sudo service apache2 reload
 echo -e "${GREEN}Apache2 config was updated!${NC}"
 echo -e "${GREEN}New config file was created: /etc/apache2/sites-available/wordpress.conf${NC}"
 echo -e "${GREEN}Website was activated & apache2 service reloaded!${NC}"
-
-
-
-# # #
-# Configure Certbot HTTPS
-echo -e "${YELLOW}Configuring letsencrypt using certbot...${NC}"
-certbot run -n --agree-tos -d $domain,www.$domain  -m  noreply@$domain  --redirect
 
 
 
