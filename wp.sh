@@ -16,15 +16,11 @@ NC='\033[0m' # No Color
 #Welcome message
 clear
 echo -e "Welcome to WordPress & LAMP stack installation and configuration wizard!
-First of all, we going to check all required packeges..."
+First of all, we going to check all required packages..."
 
 #Checking packages
 echo -e "${YELLOW}Checking packages...${NC}"
-echo -e "List of required packeges: nano, zip, unzip, mc, htop, fail2ban, apache2 & php, mysql, php curl, phpmyadmin, wget, curl"
-
-read -r -p "Do you want to check packeges? [y/N] " response
-case $response in
-    [yY][eE][sS]|[yY]) 
+echo -e "List of required packages: nano, zip, unzip, mc, htop, fail2ban, apache2 & php, mysql, php curl, phpmyadmin, wget, curl"
 
 
 NANO=$(dpkg-query -W -f='${Status}' nano 2>/dev/null | grep -c "ok installed")
@@ -107,15 +103,15 @@ PHP5CURL=$(dpkg-query -W -f='${Status}' php5-curl 2>/dev/null | grep -c "ok inst
       echo -e "${GREEN}php5-curl is installed!${NC}"
   fi
 
-PHPMYADMIN=$(dpkg-query -W -f='${Status}' phpmyadmin 2>/dev/null | grep -c "ok installed")
-  if [ $(dpkg-query -W -f='${Status}' phpmyadmin 2>/dev/null | grep -c "ok installed") -eq 0 ];
-  then
-    echo -e "${YELLOW}Installing phpmyadmin${NC}"
-    apt-get install phpmyadmin --yes;
-    elif [ $(dpkg-query -W -f='${Status}' phpmyadmin 2>/dev/null | grep -c "ok installed") -eq 1 ];
-    then
-      echo -e "${GREEN}phpmyadmin is installed!${NC}"
-  fi
+# PHPMYADMIN=$(dpkg-query -W -f='${Status}' phpmyadmin 2>/dev/null | grep -c "ok installed")
+#   if [ $(dpkg-query -W -f='${Status}' phpmyadmin 2>/dev/null | grep -c "ok installed") -eq 0 ];
+#   then
+#     echo -e "${YELLOW}Installing phpmyadmin${NC}"
+#     apt-get install phpmyadmin --yes;
+#     elif [ $(dpkg-query -W -f='${Status}' phpmyadmin 2>/dev/null | grep -c "ok installed") -eq 1 ];
+#     then
+#       echo -e "${GREEN}phpmyadmin is installed!${NC}"
+#   fi
 
 WGET=$(dpkg-query -W -f='${Status}' wget 2>/dev/null | grep -c "ok installed")
   if [ $(dpkg-query -W -f='${Status}' wget 2>/dev/null | grep -c "ok installed") -eq 0 ];
@@ -137,171 +133,121 @@ CURL=$(dpkg-query -W -f='${Status}' curl 2>/dev/null | grep -c "ok installed")
       echo -e "${GREEN}curl is installed!${NC}"
   fi
 
-  ;;
-
-    *)
-
-  echo -e "${RED}
-  Packeges check is ignored! 
-  Please be aware, that apache2, mysql, phpmyadmin and other software may not be installed!
-  ${NC}"
-
-  ;;
-esac
-
 
 #phpmyadmin default path change
-echo -e "${YELLOW}Changing phpMyAdmin default path from /phpMyAdmin to /myadminphp...${NC}"
+# echo -e "${YELLOW}Changing phpMyAdmin default path from /phpMyAdmin to /myadminphp...${NC}"
 
-read -r -p "Do you want to change default phpMyAdmin path to /myadminphp? [y/N] " response
-case $response in
-    [yY][eE][sS]|[yY]) 
+# read -r -p "Do you want to change default phpMyAdmin path to /myadminphp? [y/N] " response
+# case $response in
+#     [yY][eE][sS]|[yY]) 
   
-cat >/etc/phpmyadmin/apache.conf <<EOL
-# phpMyAdmin default Apache configuration
+# cat >/etc/phpmyadmin/apache.conf <<EOL
+# # phpMyAdmin default Apache configuration
 
-Alias /myadminphp /usr/share/phpmyadmin
+# Alias /myadminphp /usr/share/phpmyadmin
 
-<Directory /usr/share/phpmyadmin>
-    Options FollowSymLinks
-    DirectoryIndex index.php
+# <Directory /usr/share/phpmyadmin>
+#     Options FollowSymLinks
+#     DirectoryIndex index.php
 
-    <IfModule mod_php5.c>
-        <IfModule mod_mime.c>
-            AddType application/x-httpd-php .php
-        </IfModule>
-        <FilesMatch ".+\.php$">
-            SetHandler application/x-httpd-php
-        </FilesMatch>
+#     <IfModule mod_php5.c>
+#         <IfModule mod_mime.c>
+#             AddType application/x-httpd-php .php
+#         </IfModule>
+#         <FilesMatch ".+\.php$">
+#             SetHandler application/x-httpd-php
+#         </FilesMatch>
 
-        php_flag magic_quotes_gpc Off
-        php_flag track_vars On
-        php_flag register_globals Off
-        php_admin_flag allow_url_fopen Off
-        php_value include_path .
-        php_admin_value upload_tmp_dir /var/lib/phpmyadmin/tmp
-        php_admin_value open_basedir /usr/share/phpmyadmin/:/etc/phpmyadmin/:/var/lib/phpmyadmin/:/usr/share/php/php-gettext/:/usr/share/javascript/:/usr/share/php/tcpdf/
-    </IfModule>
+#         php_flag magic_quotes_gpc Off
+#         php_flag track_vars On
+#         php_flag register_globals Off
+#         php_admin_flag allow_url_fopen Off
+#         php_value include_path .
+#         php_admin_value upload_tmp_dir /var/lib/phpmyadmin/tmp
+#         php_admin_value open_basedir /usr/share/phpmyadmin/:/etc/phpmyadmin/:/var/lib/phpmyadmin/:/usr/share/php/php-gettext/:/usr/share/javascript/:/usr/share/php/tcpdf/
+#     </IfModule>
 
-</Directory>
+# </Directory>
 
-# Authorize for setup
-<Directory /usr/share/phpmyadmin/setup>
-    <IfModule mod_authz_core.c>
-        <IfModule mod_authn_file.c>
-            AuthType Basic
-            AuthName "phpMyAdmin Setup"
-            AuthUserFile /etc/phpmyadmin/htpasswd.setup
-        </IfModule>
-        Require valid-user
-    </IfModule>
-</Directory>
+# # Authorize for setup
+# <Directory /usr/share/phpmyadmin/setup>
+#     <IfModule mod_authz_core.c>
+#         <IfModule mod_authn_file.c>
+#             AuthType Basic
+#             AuthName "phpMyAdmin Setup"
+#             AuthUserFile /etc/phpmyadmin/htpasswd.setup
+#         </IfModule>
+#         Require valid-user
+#     </IfModule>
+# </Directory>
 
-# Disallow web access to directories that don't need it
-<Directory /usr/share/phpmyadmin/libraries>
-    Require all denied
-</Directory>
-<Directory /usr/share/phpmyadmin/setup/lib>
-    Require all denied
-</Directory>
-EOL
+# # Disallow web access to directories that don't need it
+# <Directory /usr/share/phpmyadmin/libraries>
+#     Require all denied
+# </Directory>
+# <Directory /usr/share/phpmyadmin/setup/lib>
+#     Require all denied
+# </Directory>
+# EOL
 
-echo -e "${GREEN}Path was succesfully changed!
-New phpMyAdmin path is: /myadminphp (i.e.: yourwebsite.com/myadminphp)${NC}"
+# echo -e "${GREEN}Path was succesfully changed!
+# New phpMyAdmin path is: /myadminphp (i.e.: yourwebsite.com/myadminphp)${NC}"
 
-        ;;
-    *)
+#         ;;
+#     *)
 
-  echo -e "${RED}Path was not changed!${NC}"
+#   echo -e "${RED}Path was not changed!${NC}"
 
-        ;;
-esac
+#         ;;
+# esac
 
 #creating user
 echo -e "${YELLOW}Adding separate user & creating website home folder for secure running of your website...${NC}"
 
-  echo -e "${YELLOW}Please, enter new username: ${NC}"
-  read username
-  echo -e "${YELLOW}Please enter website name: ${NC}"
-  read websitename
-  groupadd $username
-  adduser --home /var/www/$username/$websitename --ingroup $username $username
-  mkdir /var/www/$username/$websitename/www
-  chown -R $username:$username /var/www/$username/$websitename
-  echo -e "${GREEN}User, group and home folder were succesfully created!
-  Username: $username
-  Group: $username
-  Home folder: /var/www/$username/$websitename
-  Website folder: /var/www/$username/$websitename/www${NC}"
+  # echo -e "${YELLOW}Please, enter new username: ${NC}"
+  # read username
+  # echo -e "${YELLOW}Please enter website name: ${NC}"
+  # read websitename
+  # groupadd wordpress
+  # adduser --home /var/www/html --ingroup wordpress wordpress
+  mkdir /srv/www/wordpress
+  # chown -R wordpress:wordpress /var/www/html
+  echo -e "${GREEN}User, group and home folder were succesfully created!"
 
 
 #configuring apache2
 echo -e "${YELLOW}Now we going to configure apache2 for your domain name & website root folder...${NC}"
 
-read -r -p "Do you want to configure Apache2 automatically? [y/N] " response
-case $response in
-    [yY][eE][sS]|[yY]) 
+# read -r -p "Do you want to configure Apache2 automatically? [y/N] " response
 
-  echo -e "Please, provide us with your domain name: "
-  read domain_name
-  echo -e "Please, provide us with your email: "
-  read domain_email
-  cat >/etc/apache2/sites-available/$domain_name.conf <<EOL
+  # echo -e "Please, provide us with your domain name: "
+  # read domain_name
+  # echo -e "Please, provide us with your email: "
+  # read domain_email
+  cat >/etc/apache2/sites-available/wordpress.conf <<EOL
   <VirtualHost *:80>
-        ServerAdmin $domain_email
-        ServerName $domain_name
-        ServerAlias www.$domain_name
-        DocumentRoot /var/www/$username/$websitename/www/
-        <Directory />
-                Options +FollowSymLinks
-                AllowOverride All
-        </Directory>
-        <Directory /var/www/$username/$websitename/www>
-                Options -Indexes +FollowSymLinks +MultiViews
-                AllowOverride All
-                Order allow,deny
-                allow from all
-        </Directory>
-
-        ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
-        <Directory "/usr/lib/cgi-bin">
-                AllowOverride None
-                Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
-                Order allow,deny
-                Allow from all
-        </Directory>
-
-        ErrorLog ${APACHE_LOG_DIR}/error.log
-
-        # Possible values include: debug, info, notice, warn, error, crit,
-        # alert, emerg.
-        LogLevel warn
-
-        CustomLog ${APACHE_LOG_DIR}/access.log combined
-</VirtualHost>
+    DocumentRoot /srv/www/wordpress
+      <Directory /srv/www/wordpress>
+        Options FollowSymLinks
+        AllowOverride Limit Options FileInfo
+        DirectoryIndex index.php
+        Require all granted
+      </Directory>
+      <Directory /srv/www/wordpress/wp-content>
+        Options FollowSymLinks
+        Require all granted
+      </Directory>
+  </VirtualHost>
 EOL
 	a2dissite 000-default
-    a2ensite $domain_name
+    a2ensite wordpress
     service apache2 restart
-    P_IP="`wget http://ipinfo.io/ip -qO -`"
+    # P_IP="`wget http://ipinfo.io/ip -qO -`"
 
     echo -e "${GREEN}Apache2 config was updated!
-    New config file was created: /etc/apache2/sites-available/$domain_name.conf
-    Domain was set to: $domain_name
-    Admin email was set to: $domain_email
-    Root folder was set to: /var/www/$username/$websitename/www
-    Option Indexes was set to: -Indexes (to close directory listing)
-    Your server public IP is: $P_IP (Please, set this IP into your domain name 'A' record)
+    New config file was created: /etc/apache2/sites-available/wordpress.conf
     Website was activated & apache2 service reloaded!
     ${NC}"
-
-        ;;
-    *)
-
-  echo -e "${RED}WARNING! Apache2 was not configured properly, you can do this manually or re run our script.${NC}"
-
-        ;;
-esac
 
 #downloading WordPress, unpacking, adding basic pack of plugins, creating .htaccess with optimal & secure configuration
 echo -e "${YELLOW}On this step we going to download latest version of WordPress with EN or RUS language, set optimal & secure configuration and add basic set of plugins...${NC}"
@@ -309,25 +255,17 @@ echo -e "${YELLOW}On this step we going to download latest version of WordPress 
 read -r -p "Do you want to install WordPress & automatically set optimal and secure configuration with basic set of plugins? [y/N] " response
 case $response in
     [yY][eE][sS]|[yY]) 
-
-  echo -e "${GREEN}Please, choose WordPress language you need (set RUS or ENG): "
-  read wordpress_lang
-
-  if [ "$wordpress_lang" == 'RUS' ];
-    then
-    wget https://ru.wordpress.org/latest-ru_RU.zip -O /tmp/$wordpress_lang.zip
-  else
-    wget https://wordpress.org/latest.zip -O /tmp/$wordpress_lang.zip
-  fi
+  
+  wget https://wordpress.org/latest.zip -O /tmp/wordpress.zip
 
   echo -e "Unpacking WordPress into website home directory..."
   sleep 5
-  unzip /tmp/$wordpress_lang.zip -d /var/www/$username/$websitename/www/
-  mv /var/www/$username/$websitename/www/wordpress/* /var/www/$username/$websitename/www
-  rm -rf /var/www/$username/$websitename/www/wordpress
-  rm /tmp/$wordpress_lang.zip
-  mkdir /var/www/$username/$websitename/www/wp-content/uploads
-  chmod -R 777 /var/www/$username/$websitename/www/wp-content/uploads
+  unzip /tmp/wordpress.zip -d /srv/www/wordpress2/
+  mv /srv/www/wordpress2/* /srv/www/wordpress
+  rm -rf /srv/www/wordpress2
+  rm /tmp/wordpress.zip
+  mkdir /srv/www/wordpress/wp-content/uploads
+  chmod -R 777 /srv/www/wordpress/wp-content/uploads
 
   echo -e "Now we going to download some useful plugins:
   1. Google XML Sitemap generator
@@ -336,27 +274,27 @@ case $response in
   4. Easy Watermark"
   sleep 7
   
-  SITEMAP="`curl https://wordpress.org/plugins/google-sitemap-generator/ | grep https://downloads.wordpress.org/plugin/google-sitemap-generator.*.*.*.zip | awk '{print $3}' | sed -ne 's/.*\(http[^"]*.zip\).*/\1/p'`"
-  wget $SITEMAP -O /tmp/sitemap.zip
-  unzip /tmp/sitemap.zip -d /tmp/sitemap
-  mv /tmp/sitemap/* /var/www/$username/$websitename/www/wp-content/plugins/
+  # SITEMAP="`curl https://wordpress.org/plugins/google-sitemap-generator/ | grep https://downloads.wordpress.org/plugin/google-sitemap-generator.*.*.*.zip | awk '{print $3}' | sed -ne 's/.*\(http[^"]*.zip\).*/\1/p'`"
+  # wget $SITEMAP -O /tmp/sitemap.zip
+  # unzip /tmp/sitemap.zip -d /tmp/sitemap
+  # mv /tmp/sitemap/* /var/www/$username/$websitename/www/wp-content/plugins/
 
-  wget https://downloads.wordpress.org/plugin/social-networks-auto-poster-facebook-twitter-g.zip -O /tmp/snap.zip
-  unzip /tmp/snap.zip -d /tmp/snap
-  mv /tmp/snap/* /var/www/$username/$websitename/www/wp-content/plugins/
+  # wget https://downloads.wordpress.org/plugin/social-networks-auto-poster-facebook-twitter-g.zip -O /tmp/snap.zip
+  # unzip /tmp/snap.zip -d /tmp/snap
+  # mv /tmp/snap/* /var/www/$username/$websitename/www/wp-content/plugins/
 
-  ADDTOANY="`curl https://wordpress.org/plugins/add-to-any/ | grep https://downloads.wordpress.org/plugin/add-to-any.*.*.zip | awk '{print $3}' | sed -ne 's/.*\(http[^"]*.zip\).*/\1/p'`"
-  wget $ADDTOANY -O /tmp/addtoany.zip
-  unzip /tmp/addtoany.zip -d /tmp/addtoany
-  mv /tmp/addtoany/* /var/www/$username/$websitename/www/wp-content/plugins/
+  # ADDTOANY="`curl https://wordpress.org/plugins/add-to-any/ | grep https://downloads.wordpress.org/plugin/add-to-any.*.*.zip | awk '{print $3}' | sed -ne 's/.*\(http[^"]*.zip\).*/\1/p'`"
+  # wget $ADDTOANY -O /tmp/addtoany.zip
+  # unzip /tmp/addtoany.zip -d /tmp/addtoany
+  # mv /tmp/addtoany/* /var/www/$username/$websitename/www/wp-content/plugins/
 
-  WATERMARK="`curl https://wordpress.org/plugins/easy-watermark/ | grep https://downloads.wordpress.org/plugin/easy-watermark.*.*.*.zip | awk '{print $3}' | sed -ne 's/.*\(http[^"]*.zip\).*/\1/p'`"
-  wget $WATERMARK -O /tmp/watermark.zip
-  unzip /tmp/watermark.zip -d /tmp/watermark
-  mv /tmp/watermark/* /var/www/$username/$websitename/www/wp-content/plugins/
+  # WATERMARK="`curl https://wordpress.org/plugins/easy-watermark/ | grep https://downloads.wordpress.org/plugin/easy-watermark.*.*.*.zip | awk '{print $3}' | sed -ne 's/.*\(http[^"]*.zip\).*/\1/p'`"
+  # wget $WATERMARK -O /tmp/watermark.zip
+  # unzip /tmp/watermark.zip -d /tmp/watermark
+  # mv /tmp/watermark/* /var/www/$username/$websitename/www/wp-content/plugins/
 
-  rm /tmp/sitemap.zip /tmp/snap.zip /tmp/addtoany.zip /tmp/watermark.zip
-  rm -rf /tmp/sitemap/ /tmp/snap/ /tmp/addtoany/ /tmp/watermark/
+  # rm /tmp/sitemap.zip /tmp/snap.zip /tmp/addtoany.zip /tmp/watermark.zip
+  # rm -rf /tmp/sitemap/ /tmp/snap/ /tmp/addtoany/ /tmp/watermark/
 
 
   echo -e "Downloading of plugins finished! All plugins were transfered into /wp-content/plugins directory.${NC}"
@@ -372,10 +310,6 @@ esac
 #creating of swap
 echo -e "On next step we going to create SWAP (it should be your RAM x2)..."
 
-read -r -p "Do you need SWAP? [y/N] " response
-case $response in
-    [yY][eE][sS]|[yY]) 
-
   RAM="`free -m | grep Mem | awk '{print $2}'`"
   swap_allowed=$(($RAM * 2))
   swap=$swap_allowed"M"
@@ -388,19 +322,12 @@ case $response in
   Swap was created: $swap${NC}"
   sleep 5
 
-        ;;
-    *)
-
-  echo -e "${RED}You didn't create any swap for faster system working. You can do this manually or re run this script.${NC}"
-
-        ;;
-esac
-
 #creation of secure .htaccess
 echo -e "${YELLOW}Creation of secure .htaccess file...${NC}"
 sleep 3
-cat >/var/www/$username/$websitename/www/.htaccess <<EOL
-<IfModule mod_rewrite.c>
+cat >/srv/www/wordpress/.htaccess <<EOL
+# BEGIN WordPress
+
 RewriteEngine On
 RewriteBase /
 RewriteRule ^index\.php$ - [L]
@@ -408,57 +335,18 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /index.php [L]
 
-RewriteCond %{query_string} concat.*\( [NC,OR]
-RewriteCond %{query_string} union.*select.*\( [NC,OR]
-RewriteCond %{query_string} union.*all.*select [NC]
-RewriteRule ^(.*)$ index.php [F,L]
-
-RewriteCond %{QUERY_STRING} base64_encode[^(]*\([^)]*\) [OR]
-RewriteCond %{QUERY_STRING} (<|%3C)([^s]*s)+cript.*(>|%3E) [NC,OR]
-</IfModule>
-
-<Files .htaccess>
-Order Allow,Deny
-Deny from all
-</Files>
-
-<Files wp-config.php>
-Order Allow,Deny
-Deny from all
-</Files>
-
-<Files wp-config-sample.php>
-Order Allow,Deny
-Deny from all
-</Files>
-
-<Files readme.html>
-Order Allow,Deny
-Deny from all
-</Files>
-
-<Files xmlrpc.php>
-Order allow,deny
-Deny from all
-</files>
-
-# Gzip
-<ifModule mod_deflate.c>
-AddOutputFilterByType DEFLATE text/text text/html text/plain text/xml text/css application/x-javascript application/javascript text/javascript
-</ifModule>
-
-Options +FollowSymLinks -Indexes
+# END WordPress
 
 EOL
 
-chmod 644 /var/www/$username/$websitename/www/.htaccess
+chmod 644 /srv/www/wordpress/.htaccess
 
 echo -e "${GREEN}.htaccess file was succesfully created!${NC}"
 
 #cration of robots.txt
 echo -e "${YELLOW}Creation of robots.txt file...${NC}"
 sleep 3
-cat >/var/www/$username/$websitename/www/robots.txt <<EOL
+cat >/srv/www/wordpress/robots.txt <<EOL
 User-agent: *
 Disallow: /cgi-bin
 Disallow: /wp-admin/
@@ -480,7 +368,7 @@ echo -e "${GREEN}File robots.txt was succesfully created!
 Setting correct rights on user's home directory and 755 rights on robots.txt${NC}"
 sleep 3
 
-chmod 755 /var/www/$username/$websitename/www/robots.txt
+chmod 755 /srv/www/wordpress/robots.txt
 
 echo -e "${GREEN}Configuring fail2ban...${NC}"
 sleep 3
@@ -582,18 +470,18 @@ echo -e "Please, set password for database user: "
 read db_pass
 
 mysql -u root -p <<EOF
-CREATE USER '$db_user'@'localhost' IDENTIFIED BY '$db_pass';
-CREATE DATABASE IF NOT EXISTS $db_user;
-GRANT ALL PRIVILEGES ON $db_user.* TO '$db_user'@'localhost';
-ALTER DATABASE $db_user CHARACTER SET utf8 COLLATE utf8_general_ci;
+CREATE USER 'wordpress'@'localhost' IDENTIFIED BY '$db_pass';
+CREATE DATABASE IF NOT EXISTS wordpress;
+GRANT ALL PRIVILEGES ON wordpress.* TO 'wordpress'@'localhost';
+ALTER DATABASE wordpress CHARACTER SET utf8 COLLATE utf8_general_ci;
 EOF
 
-cat >/var/www/$username/$websitename/www/wp-config.php <<EOL
+cat >/srv/www/wordpress/wp-config.php <<EOL
 <?php
 
-define('DB_NAME', '$db_user');
+define('DB_NAME', 'wordpress');
 
-define('DB_USER', '$db_user');
+define('DB_USER', 'wordpress');
 
 define('DB_PASSWORD', '$db_pass');
 
@@ -603,14 +491,14 @@ define('DB_CHARSET', 'utf8');
 
 define('DB_COLLATE', '');
 
-define('AUTH_KEY',         '$db_user');
-define('SECURE_AUTH_KEY',  '$db_user');
-define('LOGGED_IN_KEY',    '$db_user');
-define('NONCE_KEY',        '$db_user');
-define('AUTH_SALT',        '$db_user');
-define('SECURE_AUTH_SALT', '$db_user');
-define('LOGGED_IN_SALT',   '$db_user');
-define('NONCE_SALT',       '$db_user');
+define('AUTH_KEY',         'wordpress');
+define('SECURE_AUTH_KEY',  'wordpress');
+define('LOGGED_IN_KEY',    'wordpress');
+define('NONCE_KEY',        'wordpress');
+define('AUTH_SALT',        'wordpress');
+define('SECURE_AUTH_SALT', 'wordpress');
+define('LOGGED_IN_SALT',   'wordpress');
+define('NONCE_SALT',       'wordpress');
 
 \$table_prefix  = 'wp_';
 
@@ -622,10 +510,7 @@ if ( !defined('ABSPATH') )
 require_once(ABSPATH . 'wp-settings.php');
 EOL
 
-chown -R $username:$username /var/www/$username
+# chown -R wordpress:wordpress /var/www/$username
 echo -e "${GREEN}Database user, database and wp-config.php were succesfully created & configured!${NC}"
 sleep 3
-echo -e "Installation & configuration succesfully finished.
-Twitter: @sm0k3net
-e-mail: info@sm0k3.net
-Bye!"
+echo -e "Installation & configuration succesfully finished."
