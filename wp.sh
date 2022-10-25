@@ -108,20 +108,9 @@ sleep 5
 
 
 
-
-
-# # #
-# Install wordpress
-echo -e "${YELLOW}Installing Wordpres...${NC}"
-mkdir -p /srv/www
-chown www-data: /srv/www
-curl https://wordpress.org/latest.tar.gz | sudo -u www-data tar zx -C /srv/www
-
-
-
 # # #
 # Configure Certbot HTTPS
-echo -e "${YELLOW}Configuring letsencrypt using certbot...${NC}"
+echo -e "${YELLOW}Configuring Apache & LetsEncrypt using certbot...${NC}"
 sudo snap install core; sudo snap refresh core
 sudo apt-get remove certbot
 sudo snap install --classic certbot
@@ -129,84 +118,25 @@ sudo ln -s /snap/bin/certbot /usr/bin/certbot
 echo -e "Enter website domain (ex: mydomain.com): "
 read domain
 certbot run -n --apache --agree-tos -d $domain,www.$domain -m noreply@$domain --redirect
+sudo service apache2 reload
+echo -e "${GREEN}Apache & LetsEncrypt was configured by Certbot!${NC}"
 
 
 
 # # #
-# Configure Apache
-echo -e "${YELLOW}Configuring Apache2...${NC}"
-
-rm -R /etc/apache2/sites-available/000-default-le-ssl.conf
-cat > /etc/apache2/sites-available/000-default-le-ssl.conf <<EOL
-<IfModule mod_ssl.c>
-<VirtualHost *:443>
-        ServerAdmin webmaster@localhost
-
-        ServerName $domain
-        ServerAlias www.$domain
-
-        DocumentRoot /srv/www/html
-
-        <Directory /srv/www/html/>
-            Options FollowSymLinks
-            AllowOverride All
-            Require all granted
-        </Directory>
-
-        ErrorLog \${APACHE_LOG_DIR}/error.log
-        CustomLog \${APACHE_LOG_DIR}/access.log combined
-
-Include /etc/letsencrypt/options-ssl-apache.conf
-SSLCertificateFile /etc/letsencrypt/live/$domain/fullchain.pem
-SSLCertificateKeyFile /etc/letsencrypt/live/$domain/privkey.pem
-</VirtualHost>
-</IfModule>
-EOL
-
-rm -R /etc/apache2/sites-available/000-default.conf
-cat > /etc/apache2/sites-available/000-default.conf <<EOL
-# Added to mitigate CVE-2017-8295 vulnerability
-UseCanonicalName On
-
-<VirtualHost *:80>
-        ServerAdmin webmaster@localhost
-
-        ServerName $domain
-        ServerAlias www.$domain
-
-        DocumentRoot /srv/www/html
-
-        <Directory /srv/www/html/>
-            Options FollowSymLinks
-            AllowOverride All
-            Require all granted
-        </Directory>
-
-        ErrorLog \${APACHE_LOG_DIR}/error.log
-        CustomLog \${APACHE_LOG_DIR}/access.log combined
-RewriteEngine on
-RewriteCond %{SERVER_NAME} =$domain [OR]
-RewriteCond %{SERVER_NAME} =www.$domain
-RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [END,NE,R=permanent]
-</VirtualHost>
-EOL
-
-sudo a2ensite 000-default
-sudo a2ensite 000-default-le-ssl
-sudo a2enmod rewrite
-sudo service apache2 reload
-
-echo -e "${GREEN}Apache2 config was updated!${NC}"
-echo -e "${GREEN}New config file was created: /etc/apache2/sites-available/wordpress.conf${NC}"
-echo -e "${GREEN}Website was activated & apache2 service reloaded!${NC}"
-
-
+# Install wordpress
+echo -e "${YELLOW}Installing Wordpres...${NC}"
+mkdir -p /srv/www/html
+chown www-data: /srv/www
+curl https://wordpress.org/latest.tar.gz | sudo -u www-data tar zx -C /srv/www
+mv /srv/www/wordpress/* /srv/www/html/
+rm -R /srv/www/wordpress
 
 # # #
 # Creating .htaccess file
 echo -e "${YELLOW}Creating .htaccess file...${NC}"
 sleep 3
-cat > /srv/www/wordpress/.htaccess <<EOL
+cat > /srv/www/html/.htaccess <<EOL
 # BEGIN WordPress
 
 RewriteEngine On
@@ -219,7 +149,7 @@ RewriteRule . /index.php [L]
 # END WordPress
 EOL
 
-chmod 644 /srv/www/wordpress/.htaccess
+chmod 644 /srv/www/html/.htaccess
 
 echo -e "${GREEN}.htaccess file was succesfully created!${NC}"
 
@@ -239,7 +169,7 @@ GRANT ALL PRIVILEGES ON wordpress.* TO 'wordpress'@'localhost';
 ALTER DATABASE wordpress CHARACTER SET utf8 COLLATE utf8_general_ci;
 EOF
 
-cat > /srv/www/wordpress/wp-config.php <<EOL
+cat > /srv/www/html/wp-config.php <<EOL
 <?php
 
 define('DB_NAME', 'wordpress');
