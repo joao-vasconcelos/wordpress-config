@@ -15,15 +15,17 @@ NC='\033[0m' # No Color
 
 #Welcome message
 clear
-echo -e "Welcome to WordPress & LAMP stack installation and configuration wizard!
-First of all, we going to check all required packages..."
+echo -e "Welcome to WordPress & LAMP stack installation and configuration wizard!"
+
+
+echo -e "Update APT"
+apt-get update;
+exit 1
+
 
 #Checking packages
 echo -e "${YELLOW}Checking packages...${NC}"
 echo -e "List of required packages: nano, zip, unzip, mc, htop, fail2ban, apache2 & php, mysql, php curl, phpmyadmin, wget, curl"
-
-apt-get update;
-apt-get update;
 
 
 NANO=$(dpkg-query -W -f='${Status}' nano 2>/dev/null | grep -c "ok installed")
