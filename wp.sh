@@ -88,34 +88,43 @@ apt-get install curl --yes;
 # echo -e "${YELLOW}Installing 'fail2ban'...${NC}"
 # apt-get install fail2ban --yes;
 
+echo -e "${GREEN}Packages updated!${NC}"
 
 
-exit 1
+
+
+#creating of swap
+echo -e "On next step we create SWAP (it should be your RAM x2)..."
+
+RAM="`free -m | grep Mem | awk '{print $2}'`"
+swap_allowed=$(($RAM * 2))
+swap=$swap_allowed"M"
+fallocate -l $swap /var/swap.img
+chmod 600 /var/swap.img
+mkswap /var/swap.img
+swapon /var/swap.img
+
+echo -e "${GREEN}RAM detected: $RAM
+Swap was created: $swap${NC}"
+sleep 5
+
+
+
+
 
 #creating user
 echo -e "${YELLOW}Adding separate user & creating website home folder for secure running of your website...${NC}"
+mkdir -p /srv/www
+chown www-data: /srv/www
+curl https://wordpress.org/latest.tar.gz | sudo -u www-data tar zx -C /srv/www
 
-  # echo -e "${YELLOW}Please, enter new username: ${NC}"
-  # read username
-  # echo -e "${YELLOW}Please enter website name: ${NC}"
-  # read websitename
-  # groupadd wordpress
-  # adduser --home /var/www/html --ingroup wordpress wordpress
-  mkdir /srv/www/wordpress
-  # chown -R wordpress:wordpress /var/www/html
-  echo -e "${GREEN}User, group and home folder were succesfully created!"
+
 
 
 #configuring apache2
 echo -e "${YELLOW}Now we going to configure apache2 for your domain name & website root folder...${NC}"
-
-# read -r -p "Do you want to configure Apache2 automatically? [y/N] " response
-
-  # echo -e "Please, provide us with your domain name: "
-  # read domain_name
-  # echo -e "Please, provide us with your email: "
-  # read domain_email
-  cat >/etc/apache2/sites-available/wordpress.conf <<EOL
+rm -R /etc/apache2/sites-available/wordpress.conf
+cat > /etc/apache2/sites-available/wordpress.conf <<EOL
   <VirtualHost *:80>
     DocumentRoot /srv/www/wordpress
       <Directory /srv/www/wordpress>
@@ -130,93 +139,25 @@ echo -e "${YELLOW}Now we going to configure apache2 for your domain name & websi
       </Directory>
   </VirtualHost>
 EOL
-	a2dissite 000-default
-    a2ensite wordpress
-    service apache2 restart
-    # P_IP="`wget http://ipinfo.io/ip -qO -`"
 
-    echo -e "${GREEN}Apache2 config was updated!
-    New config file was created: /etc/apache2/sites-available/wordpress.conf
-    Website was activated & apache2 service reloaded!
-    ${NC}"
+sudo a2dissite 000-default
+sudo a2ensite wordpress
+sudo a2enmod rewrite
+sudo service apache2 reload
 
-#downloading WordPress, unpacking, adding basic pack of plugins, creating .htaccess with optimal & secure configuration
-echo -e "${YELLOW}On this step we going to download latest version of WordPress with EN or RUS language, set optimal & secure configuration and add basic set of plugins...${NC}"
-
-read -r -p "Do you want to install WordPress & automatically set optimal and secure configuration with basic set of plugins? [y/N] " response
-case $response in
-    [yY][eE][sS]|[yY]) 
-  
-  wget https://wordpress.org/latest.zip -O /tmp/wordpress.zip
-
-  echo -e "Unpacking WordPress into website home directory..."
-  sleep 5
-  unzip /tmp/wordpress.zip -d /srv/www/wordpress2/
-  mv /srv/www/wordpress2/* /srv/www/wordpress
-  rm -rf /srv/www/wordpress2
-  rm /tmp/wordpress.zip
-  mkdir /srv/www/wordpress/wp-content/uploads
-  chmod -R 777 /srv/www/wordpress/wp-content/uploads
-
-  echo -e "Now we going to download some useful plugins:
-  1. Google XML Sitemap generator
-  2. Social Networks Auto Poster
-  3. Add to Any
-  4. Easy Watermark"
-  sleep 7
-  
-  # SITEMAP="`curl https://wordpress.org/plugins/google-sitemap-generator/ | grep https://downloads.wordpress.org/plugin/google-sitemap-generator.*.*.*.zip | awk '{print $3}' | sed -ne 's/.*\(http[^"]*.zip\).*/\1/p'`"
-  # wget $SITEMAP -O /tmp/sitemap.zip
-  # unzip /tmp/sitemap.zip -d /tmp/sitemap
-  # mv /tmp/sitemap/* /var/www/$username/$websitename/www/wp-content/plugins/
-
-  # wget https://downloads.wordpress.org/plugin/social-networks-auto-poster-facebook-twitter-g.zip -O /tmp/snap.zip
-  # unzip /tmp/snap.zip -d /tmp/snap
-  # mv /tmp/snap/* /var/www/$username/$websitename/www/wp-content/plugins/
-
-  # ADDTOANY="`curl https://wordpress.org/plugins/add-to-any/ | grep https://downloads.wordpress.org/plugin/add-to-any.*.*.zip | awk '{print $3}' | sed -ne 's/.*\(http[^"]*.zip\).*/\1/p'`"
-  # wget $ADDTOANY -O /tmp/addtoany.zip
-  # unzip /tmp/addtoany.zip -d /tmp/addtoany
-  # mv /tmp/addtoany/* /var/www/$username/$websitename/www/wp-content/plugins/
-
-  # WATERMARK="`curl https://wordpress.org/plugins/easy-watermark/ | grep https://downloads.wordpress.org/plugin/easy-watermark.*.*.*.zip | awk '{print $3}' | sed -ne 's/.*\(http[^"]*.zip\).*/\1/p'`"
-  # wget $WATERMARK -O /tmp/watermark.zip
-  # unzip /tmp/watermark.zip -d /tmp/watermark
-  # mv /tmp/watermark/* /var/www/$username/$websitename/www/wp-content/plugins/
-
-  # rm /tmp/sitemap.zip /tmp/snap.zip /tmp/addtoany.zip /tmp/watermark.zip
-  # rm -rf /tmp/sitemap/ /tmp/snap/ /tmp/addtoany/ /tmp/watermark/
+echo -e "${GREEN}Apache2 config was updated!
+New config file was created: /etc/apache2/sites-available/wordpress.conf
+Website was activated & apache2 service reloaded!
+${NC}"
 
 
-  echo -e "Downloading of plugins finished! All plugins were transfered into /wp-content/plugins directory.${NC}"
 
-        ;;
-    *)
 
-  echo -e "${RED}WordPress and plugins were not downloaded & installed. You can do this manually or re run this script.${NC}"
-
-        ;;
-esac
-
-#creating of swap
-echo -e "On next step we going to create SWAP (it should be your RAM x2)..."
-
-  RAM="`free -m | grep Mem | awk '{print $2}'`"
-  swap_allowed=$(($RAM * 2))
-  swap=$swap_allowed"M"
-  fallocate -l $swap /var/swap.img
-  chmod 600 /var/swap.img
-  mkswap /var/swap.img
-  swapon /var/swap.img
-
-  echo -e "${GREEN}RAM detected: $RAM
-  Swap was created: $swap${NC}"
-  sleep 5
 
 #creation of secure .htaccess
 echo -e "${YELLOW}Creation of secure .htaccess file...${NC}"
 sleep 3
-cat >/srv/www/wordpress/.htaccess <<EOL
+cat > /srv/www/wordpress/.htaccess <<EOL
 # BEGIN WordPress
 
 RewriteEngine On
@@ -227,39 +168,102 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /index.php [L]
 
 # END WordPress
-
 EOL
 
 chmod 644 /srv/www/wordpress/.htaccess
 
 echo -e "${GREEN}.htaccess file was succesfully created!${NC}"
 
-#cration of robots.txt
-echo -e "${YELLOW}Creation of robots.txt file...${NC}"
-sleep 3
-cat >/srv/www/wordpress/robots.txt <<EOL
-User-agent: *
-Disallow: /cgi-bin
-Disallow: /wp-admin/
-Disallow: /wp-includes/
-Disallow: /wp-content/
-Disallow: /wp-content/plugins/
-Disallow: /wp-content/themes/
-Disallow: /trackback
-Disallow: */trackback
-Disallow: */*/trackback
-Disallow: */*/feed/*/
-Disallow: */feed
-Disallow: /*?*
-Disallow: /tag
-Disallow: /?author=*
+
+
+
+# MYSQL NOW
+echo -e "${GREEN}Adding user & database for WordPress, setting wp-config.php...${NC}"
+echo -e "Set password for database 'wordpress' user: "
+read db_pass
+
+mysql -u root -p <<EOF
+CREATE USER 'wordpress'@'localhost' IDENTIFIED BY '$db_pass';
+CREATE DATABASE IF NOT EXISTS wordpress;
+GRANT ALL PRIVILEGES ON wordpress.* TO 'wordpress'@'localhost';
+ALTER DATABASE wordpress CHARACTER SET utf8 COLLATE utf8_general_ci;
+EOF
+
+cat > /srv/www/wordpress/wp-config.php <<EOL
+<?php
+
+define('DB_NAME', 'wordpress');
+
+define('DB_USER', 'wordpress');
+
+define('DB_PASSWORD', '$db_pass');
+
+define('DB_HOST', 'localhost');
+
+define('DB_CHARSET', 'utf8');
+
+define('DB_COLLATE', '');
+
+define('AUTH_KEY',         'wordpress');
+define('SECURE_AUTH_KEY',  'wordpress');
+define('LOGGED_IN_KEY',    'wordpress');
+define('NONCE_KEY',        'wordpress');
+define('AUTH_SALT',        'wordpress');
+define('SECURE_AUTH_SALT', 'wordpress');
+define('LOGGED_IN_SALT',   'wordpress');
+define('NONCE_SALT',       'wordpress');
+
+\$table_prefix  = 'wp_';
+
+define('WP_DEBUG', false);
+
+if ( !defined('ABSPATH') )
+	define('ABSPATH', dirname(__FILE__) . '/');
+
+require_once(ABSPATH . 'wp-settings.php');
 EOL
 
-echo -e "${GREEN}File robots.txt was succesfully created!
-Setting correct rights on user's home directory and 755 rights on robots.txt${NC}"
-sleep 3
+# chown -R wordpress:wordpress /var/www/$username
+echo -e "${GREEN}Database user, database and wp-config.php were succesfully created & configured!${NC}"
 
-chmod 755 /srv/www/wordpress/robots.txt
+
+
+
+
+
+exit 1
+
+
+
+
+
+
+#cration of robots.txt
+# echo -e "${YELLOW}Creation of robots.txt file...${NC}"
+# sleep 3
+# cat >/srv/www/wordpress/robots.txt <<EOL
+# User-agent: *
+# Disallow: /cgi-bin
+# Disallow: /wp-admin/
+# Disallow: /wp-includes/
+# Disallow: /wp-content/
+# Disallow: /wp-content/plugins/
+# Disallow: /wp-content/themes/
+# Disallow: /trackback
+# Disallow: */trackback
+# Disallow: */*/trackback
+# Disallow: */*/feed/*/
+# Disallow: */feed
+# Disallow: /*?*
+# Disallow: /tag
+# Disallow: /?author=*
+# EOL
+
+# echo -e "${GREEN}File robots.txt was succesfully created!
+# Setting correct rights on user's home directory and 755 rights on robots.txt${NC}"
+# sleep 3
+
+# chmod 755 /srv/www/wordpress/robots.txt
 
 echo -e "${GREEN}Configuring fail2ban...${NC}"
 sleep 3
@@ -354,54 +358,6 @@ service mysql restart
 echo -e "${GREEN}Services succesfully restarted!${NC}"
 sleep 3
 
-echo -e "${GREEN}Adding user & database for WordPress, setting wp-config.php...${NC}"
-echo -e "Please, set username for database: "
-read db_user
-echo -e "Please, set password for database user: "
-read db_pass
 
-mysql -u root -p <<EOF
-CREATE USER 'wordpress'@'localhost' IDENTIFIED BY '$db_pass';
-CREATE DATABASE IF NOT EXISTS wordpress;
-GRANT ALL PRIVILEGES ON wordpress.* TO 'wordpress'@'localhost';
-ALTER DATABASE wordpress CHARACTER SET utf8 COLLATE utf8_general_ci;
-EOF
-
-cat >/srv/www/wordpress/wp-config.php <<EOL
-<?php
-
-define('DB_NAME', 'wordpress');
-
-define('DB_USER', 'wordpress');
-
-define('DB_PASSWORD', '$db_pass');
-
-define('DB_HOST', 'localhost');
-
-define('DB_CHARSET', 'utf8');
-
-define('DB_COLLATE', '');
-
-define('AUTH_KEY',         'wordpress');
-define('SECURE_AUTH_KEY',  'wordpress');
-define('LOGGED_IN_KEY',    'wordpress');
-define('NONCE_KEY',        'wordpress');
-define('AUTH_SALT',        'wordpress');
-define('SECURE_AUTH_SALT', 'wordpress');
-define('LOGGED_IN_SALT',   'wordpress');
-define('NONCE_SALT',       'wordpress');
-
-\$table_prefix  = 'wp_';
-
-define('WP_DEBUG', false);
-
-if ( !defined('ABSPATH') )
-	define('ABSPATH', dirname(__FILE__) . '/');
-
-require_once(ABSPATH . 'wp-settings.php');
-EOL
-
-# chown -R wordpress:wordpress /var/www/$username
-echo -e "${GREEN}Database user, database and wp-config.php were succesfully created & configured!${NC}"
 sleep 3
 echo -e "Installation & configuration succesfully finished."
