@@ -85,6 +85,9 @@ apt-get install wget --yes;
 echo -e "${YELLOW}Installing 'curl'...${NC}"
 apt-get install curl --yes;
 
+echo -e "${YELLOW}Installing 'certbot'...${NC}"
+apt-get install certbot --yes;
+
 echo -e "${GREEN}Packages updated!${NC}"
 
 
@@ -123,31 +126,79 @@ curl https://wordpress.org/latest.tar.gz | sudo -u www-data tar zx -C /srv/www
 # # #
 # Configure Apache
 echo -e "${YELLOW}Configuring Apache2...${NC}"
-rm -R /etc/apache2/sites-available/wordpress.conf
-cat > /etc/apache2/sites-available/wordpress.conf <<EOL
-  <VirtualHost *:80>
-    DocumentRoot /srv/www/wordpress
-      <Directory /srv/www/wordpress>
-        Options FollowSymLinks
-        AllowOverride Limit Options FileInfo
-        DirectoryIndex index.php
-        Require all granted
-      </Directory>
-      <Directory /srv/www/wordpress/wp-content>
-        Options FollowSymLinks
-        Require all granted
-      </Directory>
-  </VirtualHost>
+echo -e "Enter website domain (ex: mydomain.com): "
+read domain
+
+rm -R /etc/apache2/sites-available/000-default-le-ssl.conf
+cat > /etc/apache2/sites-available/000-default-le-ssl.conf <<EOL
+<IfModule mod_ssl.c>
+<VirtualHost *:443>
+        ServerAdmin webmaster@localhost
+
+        ServerName $domain
+        ServerAlias www.$domain
+
+        DocumentRoot /srv/www/html
+
+        <Directory /srv/www/html/>
+            Options FollowSymLinks
+            AllowOverride All
+            Require all granted
+        </Directory>
+
+        ErrorLog \${APACHE_LOG_DIR}/error.log
+        CustomLog \${APACHE_LOG_DIR}/access.log combined
+
+Include /etc/letsencrypt/options-ssl-apache.conf
+SSLCertificateFile /etc/letsencrypt/live/$domain/fullchain.pem
+SSLCertificateKeyFile /etc/letsencrypt/live/$domain/privkey.pem
+</VirtualHost>
+</IfModule>
 EOL
 
-sudo a2dissite 000-default
-sudo a2ensite wordpress
+rm -R /etc/apache2/sites-available/000-default.conf
+cat > /etc/apache2/sites-available/000-default.conf <<EOL
+# Added to mitigate CVE-2017-8295 vulnerability
+UseCanonicalName On
+
+<VirtualHost *:80>
+        ServerAdmin webmaster@localhost
+
+        ServerName $domain
+        ServerAlias www.$domain
+
+        DocumentRoot /srv/www/html
+
+        <Directory /srv/www/html/>
+            Options FollowSymLinks
+            AllowOverride All
+            Require all granted
+        </Directory>
+
+        ErrorLog \${APACHE_LOG_DIR}/error.log
+        CustomLog \${APACHE_LOG_DIR}/access.log combined
+RewriteEngine on
+RewriteCond %{SERVER_NAME} =$domain [OR]
+RewriteCond %{SERVER_NAME} =www.$domain
+RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [END,NE,R=permanent]
+</VirtualHost>
+EOL
+
+sudo a2ensite 000-default
+sudo a2ensite 000-default-le-ssl
 sudo a2enmod rewrite
 sudo service apache2 reload
 
 echo -e "${GREEN}Apache2 config was updated!${NC}"
 echo -e "${GREEN}New config file was created: /etc/apache2/sites-available/wordpress.conf${NC}"
 echo -e "${GREEN}Website was activated & apache2 service reloaded!${NC}"
+
+
+
+# # #
+# Configure Certbot HTTPS
+echo -e "${YELLOW}Configuring letsencrypt using certbot...${NC}"
+certbot run -n --agree-tos -d $domain,www.$domain  -m  noreply@$domain  --redirect
 
 
 
