@@ -109,9 +109,27 @@ sleep 5
 
 
 # # #
-# Configure Certbot HTTPS
+# Configure Apache2 & Certbot HTTPS
 echo -e "${YELLOW}Configuring Apache & LetsEncrypt using certbot...${NC}"
-sudo snap install core; sudo snap refresh core
+cat > /etc/apache2/sites-available/000-default-temp.conf <<EOL
+# Added to mitigate CVE-2017-8295 vulnerability
+UseCanonicalName On
+
+<VirtualHost *:80>
+        ServerName $domain
+        ServerAlias www.$domain
+        ServerAdmin webmaster@localhost
+        DocumentRoot /srv/www/html
+</VirtualHost>
+EOL
+mv /etc/apache2/sites-available/000-default-temp.conf /etc/apache2/sites-available/000-default.conf
+sudo a2dissite 000-default
+sudo a2ensite 000-default
+sudo service apache2 reload
+sleep 3
+
+sudo snap install core
+sudo snap refresh core
 sudo apt-get remove certbot
 sudo snap install --classic certbot
 sudo ln -s /snap/bin/certbot /usr/bin/certbot
