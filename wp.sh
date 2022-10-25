@@ -128,7 +128,7 @@ sudo snap install --classic certbot
 sudo ln -s /snap/bin/certbot /usr/bin/certbot
 echo -e "Enter website domain (ex: mydomain.com): "
 read domain
-certbot run -n -m --apache --agree-tos -d $domain,www.$domain  noreply@$domain  --redirect
+certbot run -n --apache --agree-tos -d $domain,www.$domain -m noreply@$domain --redirect
 
 
 
